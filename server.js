@@ -47,24 +47,18 @@ app.use((request, response, next) => {
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', (request, response) => {
-    //This will send json object as response instead of html and header content-type will automatically change to 'application/json'
-    //response.send({name: "Omar", age: 31, job: "Developer"});
-
-    //This will render the template in './views' folder including data
     response.render('home.hbs', {
         pageTitle: 'Home Page',
         welcomeMessage: 'Welcome to our new Web Server Website!!'
     });
-
 }).get('/about', (request, response) => {
-    //This will send html as response instead of html and header content-type will automatically change to 'text/html'
-    //response.send('<h1>About Me!</h1>');
-
-    //This will render the template in './views' folder including data
     response.render('about.hbs', {
         pageTitle: 'About Page'
     });
-
+}).get('/projects', (request, response) => {
+    response.render('projects.hbs', {
+        pageTitle: 'Projects'
+    });
 }).get('/bad', (request, response) => {
     response.send({errorMessage: 'Unable to handle request'});
 });
