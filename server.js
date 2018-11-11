@@ -1,19 +1,49 @@
 const express = require('express');
 const hbs = require('hbs');
+const fs = require('fs');
+
 const app = express();
 
 //To allow partials (like headers, footers, etc..) we need to call hbs.registerPartials
 hbs.registerPartials(__dirname + '/views/partials');
 //This Uses hbs (handlebars) to allow templating
 app.set('view engine', 'hbs');
-//This will serve localhost:3000/help.html
-app.use(express.static(__dirname + '/public'));
 
 //This will register data that can be used in all partials by referencing {{getCurrentYear}}
 hbs.registerHelper('getCurrentYear', () => new Date().getFullYear());
 
 //This will process data and return it after some functionality to be used in partials
-hbs.registerHelper('screamIt', (text) => text.toUpperCase() );
+hbs.registerHelper('screamIt', (text) => text.toUpperCase());
+
+//Register a Middleware with express
+app.use((request, response, next) => {
+
+    let now = new Date().toString();
+    let log = `${now}: ${request.method} - ${request.url}`;
+
+    //Log the request to console and logfile
+    console.log(log);
+    fs.appendFile('server.log', log + '\n', (err) => {
+        if (err) {
+            console.log('Unable to log to server.log');
+        }
+    });
+
+    //this will instruct the app to continue processing request
+    next();
+
+});
+
+//This middleware we will send all requests to maintenance page - without calling next();
+app.use((request, response, next) => {
+    response.render('maintenance.hbs', {
+        pageTitle: "We'll be right back",
+        message: "The site is currently under maintenance"
+    });
+});
+
+//This will serve localhost:3000/help.html
+app.use(express.static(__dirname + '/public'));
 
 app.get('/', (request, response) => {
     //This will send json object as response instead of html and header content-type will automatically change to 'application/json'
