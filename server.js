@@ -2,7 +2,8 @@ const express = require('express');
 const hbs = require('hbs');
 const fs = require('fs');
 
-const app = express();
+const port = process.env.PORT || 3000;
+let app = express();
 
 //To allow partials (like headers, footers, etc..) we need to call hbs.registerPartials
 hbs.registerPartials(__dirname + '/views/partials');
@@ -35,12 +36,12 @@ app.use((request, response, next) => {
 });
 
 //This middleware we will send all requests to maintenance page - without calling next();
-app.use((request, response, next) => {
-    response.render('maintenance.hbs', {
-        pageTitle: "We'll be right back",
-        message: "The site is currently under maintenance"
-    });
-});
+// app.use((request, response, next) => {
+//     response.render('maintenance.hbs', {
+//         pageTitle: "We'll be right back",
+//         message: "The site is currently under maintenance"
+//     });
+// });
 
 //This will serve localhost:3000/help.html
 app.use(express.static(__dirname + '/public'));
@@ -68,6 +69,6 @@ app.get('/', (request, response) => {
     response.send({errorMessage: 'Unable to handle request'});
 });
 
-app.listen(3000, () => {
-    console.log('Server is up on port 3000');
+app.listen(port, () => {
+    console.log(`Server is up on port ${port}`);
 });
